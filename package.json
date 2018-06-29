@@ -8,5 +8,11 @@
   },
   "keywords": [],
   "author": "Justin Makeig <jmpublic+github@makeig.com> (https://github.com/jmakeig)",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "dependencies": {
+    "xstate": "^3.3.2"
+  },
+  "devDependencies": {
+    "jest": "^23.2.0"
+  }
 }
