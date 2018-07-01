@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "rollup -c",
+    "watch": "rollup -c --watch"
   },
   "keywords": [],
   "author": "Justin Makeig <jmpublic+github@makeig.com> (https://github.com/jmakeig)",
@@ -13,6 +15,8 @@
     "xstate": "^3.3.2"
   },
   "devDependencies": {
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "jest": "^23.2.0"
   }
 }
