@@ -4,9 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "build": "rollup -c",
-    "watch": "rollup -c --watch"
+    "test": "jest"
   },
   "keywords": [],
   "author": "Justin Makeig <jmpublic+github@makeig.com> (https://github.com/jmakeig)",
