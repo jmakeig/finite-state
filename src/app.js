@@ -2,24 +2,25 @@ import { Machine } from 'xstate';
 import { createStore } from 'redux';
 import markdown from '../src/states/machine.js';
 
-// TODO: Add a parameter to seed an itial state
-function App() {
-  const machine = Machine(markdown);
-
+/**
+ * Create a new application state machine.
+ *
+ * @param {*} [start] Optionally set the state, for example, for testing.
+ *                    `currentState` and `state` properties to initialize.
+ */
+function App(start) {
+  const machine = Machine(
+    Object.assign(
+      {},
+      markdown,
+      // Override the `initial` property
+      start && start.currentState ? { initial: start.currentState } : {}
+    )
+  );
   this._machine = machine;
   this.currentState = machine.initialState;
 
-  function reducer(state, action) {
-    // `action.type` comes from the state transition name
-    switch (action.type) {
-      case 'success':
-      case 'error':
-        return Object.assign({}, state, { file: action.payload });
-    }
-    return state;
-  }
-
-  this._store = createStore(reducer, {});
+  this._store = createStore(reducer, start ? start.state || {} : {});
   this._store.subscribe(() => {
     this.dispatch(this._store.getState());
   });
@@ -30,6 +31,18 @@ function App() {
       get: () => this._store.getState()
     }
   });
+
+  function reducer(state, action) {
+    // `action.type` comes from the state transition name
+    switch (action.type) {
+      case 'success':
+      case 'error':
+        return Object.assign({}, state, { file: action.payload });
+      case 'selectText':
+        return Object.assign({}, state, { selection: action.payload });
+    }
+    return state;
+  }
 }
 
 App.prototype.dispatch = function(state) {

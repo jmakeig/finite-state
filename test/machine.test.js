@@ -21,18 +21,21 @@ test('load', () => {
 
 test('selectText', () => {
   expect.hasAssertions();
-  const app = new App();
+  const start = {
+    currentState: 'Document',
+    state: { file: { name: 'X' } }
+  };
+  const app = new App(start);
   return app
-    .transition('load')
-    .then(() =>
-      app.transition('selectText', {
-        text: 'this is what is selected',
-        start: { line: 33, column: 14 },
-        end: { line: 34, column: 77 }
-      })
-    )
+    .transition('selectText', {
+      text: 'this is what is selected',
+      start: { line: 33, column: 14 },
+      end: { line: 34, column: 77 }
+    })
     .then(() => {
       expect(app.currentState.value).toBe('TextSelected');
+      expect(app.state.selection.start.line).toBe(33);
+      expect(app.state.selection.end.column).toBe(77);
     });
 });
 
