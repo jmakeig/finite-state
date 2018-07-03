@@ -1,9 +1,7 @@
 // import login from './login.js';
 // import doc from './document.js';
 
-import { Machine } from 'xstate';
-
-const markdown = {
+export default {
   strict: true,
   key: 'Markdown',
   initial: 'Empty',
@@ -29,13 +27,10 @@ const markdown = {
     Error: {},
     TextSelected: {
       on: {
-        annotate: 'NewAnnotation'
+        annotate: 'NewAnnotation',
+        cancel: 'Document'
       }
     },
     NewAnnotation: {}
   }
 };
-
-const machine = Machine(markdown);
-
-export default machine;

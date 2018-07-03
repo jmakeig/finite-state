@@ -15,8 +15,25 @@ test('load', () => {
   return app.transition('load').then(() => {
     expect(app.currentState.value).toBe('Document');
     expect(app.state.file.name).toBe('some-file.md');
-    expect(app.state.file.name).toBe('some-file.md');
+    expect(app.state.file.markdown).toMatch(/^# Hello, world!/);
   });
+});
+
+test('selectText', () => {
+  expect.hasAssertions();
+  const app = new App();
+  return app
+    .transition('load')
+    .then(() =>
+      app.transition('selectText', {
+        text: 'this is what is selected',
+        start: { line: 33, column: 14 },
+        end: { line: 34, column: 77 }
+      })
+    )
+    .then(() => {
+      expect(app.currentState.value).toBe('TextSelected');
+    });
 });
 
 test('Initial state', () => {

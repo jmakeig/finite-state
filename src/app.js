@@ -1,15 +1,20 @@
-import machine from '../src/states/machine.js';
+import { Machine } from 'xstate';
 import { createStore } from 'redux';
+import markdown from '../src/states/machine.js';
 
+// TODO: Add a parameter to seed an itial state
 function App() {
+  const machine = Machine(markdown);
+
   this._machine = machine;
   this.currentState = machine.initialState;
 
   function reducer(state, action) {
+    // `action.type` comes from the state transition name
     switch (action.type) {
-      case 'LOAD_MARKDOWN':
-      case 'LOAD_MARKDOWN_ERROR':
-        return { ...state, ...action.payload };
+      case 'success':
+      case 'error':
+        return Object.assign({}, state, { file: action.payload });
     }
     return state;
   }
@@ -31,11 +36,15 @@ App.prototype.dispatch = function(state) {
   //
 };
 App.prototype.transition = function(event, action) {
+  if (!event) {
+    throw new ReferenceError('event cannot be empty');
+  }
+
   // console.log(`Transitioning from ${this.currentState.value} using ${event}`);
   const curr = this._machine.transition(this.currentState, event);
-  if (action && action.type) {
+  if (action) {
     // console.log(`Updating state with ${action.type}`);
-    this._store.dispatch(action);
+    this._store.dispatch({ type: event, payload: action });
   }
   this.currentState = curr;
   if (curr.actions && curr.actions.length) {
@@ -48,13 +57,14 @@ App.prototype.transition = function(event, action) {
   return Promise.resolve();
 };
 
-// Dummy async loader
+// FIXME: Dummy async loader
 function doLoadMarkdown() {
   // QUESTION: How do I fake a delay here with setTimeout?
   // return new Promise(resolve => setTimeout(() => resolve('myFile.md'), 200));
   const payload = {
     name: 'some-file.md',
-    markdown: '# Hello, world!\n\nIpsum lorem…'
+    markdown: '# Hello, world!\n\nIpsum lorem…',
+    annotations: {}
   };
   // TODO: Load and parse Markdown file from the file system
   return Promise.resolve(payload);
@@ -68,16 +78,10 @@ function doLoadMarkdown() {
 App.prototype.loadMarkdown = function() {
   return doLoadMarkdown()
     .then(file => {
-      return this.transition('success', {
-        type: 'LOAD_MARKDOWN',
-        payload: { file }
-      });
+      return this.transition('success', file);
     })
     .catch(error => {
-      return this.transition('error', {
-        type: 'LOAD_MARKDOWN_ERROR',
-        payload: { error }
-      });
+      return this.transition('error', error);
     });
 };
 
