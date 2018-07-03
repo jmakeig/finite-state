@@ -31,15 +31,15 @@ App.prototype.dispatch = function(state) {
   //
 };
 App.prototype.transition = function(event, action) {
-  console.log(`Transitioning from ${this.currentState.value} using ${event}`);
+  // console.log(`Transitioning from ${this.currentState.value} using ${event}`);
   const curr = this._machine.transition(this.currentState, event);
   if (action && action.type) {
-    console.log(`Updating state with ${action.type}`);
+    // console.log(`Updating state with ${action.type}`);
     this._store.dispatch(action);
   }
   this.currentState = curr;
   if (curr.actions && curr.actions.length) {
-    console.log(`Executing actions ${curr.actions}`);
+    // console.log(`Executing actions ${curr.actions}`);
     return Promise.all(curr.actions.map(action => this[action]()));
   }
   // FIXME: Updates to state and UI state need to be transactional

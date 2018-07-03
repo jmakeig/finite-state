@@ -19,14 +19,14 @@ test('load', () => {
   });
 });
 
-// test('Initial state', () => {
-//   const app = new App();
-//   expect(app.currentState.value).toBe('Empty');
-// });
+test('Initial state', () => {
+  const app = new App();
+  expect(app.currentState.value).toBe('Empty');
+});
 
-// test('Unknown transition', () => {
-//   const app = new App(machine);
-//   expect(() => {
-//     app.transition('asdf');
-//   }).toThrowError();
-// });
+test('Unknown transition', () => {
+  const app = new App();
+  expect(() => {
+    app.transition('asdf');
+  }).toThrowError();
+});
