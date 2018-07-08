@@ -16,7 +16,9 @@ export default {
         error: 'Error',
         success: 'Document'
       },
-      onEntry: ['loadMarkdown']
+      activities: ['loadMarkdown']
+      // onEntry: 'enterLoading',
+      // onExit: 'exitLoading'
     },
     Document: {
       on: {
@@ -29,7 +31,8 @@ export default {
       on: {
         annotate: 'NewAnnotation',
         cancel: 'Document'
-      }
+      },
+      onExit: ['clearSelection']
     },
     NewAnnotation: {}
   }

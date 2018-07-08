@@ -18,7 +18,7 @@ test('load', () => {
     expect(app.state.file.markdown).toMatch(/^# Hello, world!/);
   });
 });
-
+/*
 test('selectText', () => {
   expect.hasAssertions();
   const start = {
@@ -39,6 +39,26 @@ test('selectText', () => {
     });
 });
 
+test('cancel text selection', () => {
+  expect.hasAssertions();
+  const start = {
+    currentState: 'TextSelected',
+    state: {
+      file: { name: 'X' },
+      selection: {
+        text: 'this is what is selected',
+        start: { line: 33, column: 14 },
+        end: { line: 34, column: 77 }
+      }
+    }
+  };
+  const app = new App(start);
+  return app.transition('cancel').then(() => {
+    expect(app.currentState.value).toBe('Document');
+    expect(app.state.selection).toBeUndefined();
+  });
+});
+
 test('Initial state', () => {
   const app = new App();
   expect(app.currentState.value).toBe('Empty');
@@ -50,3 +70,4 @@ test('Unknown transition', () => {
     app.transition('asdf');
   }).toThrowError();
 });
+*/

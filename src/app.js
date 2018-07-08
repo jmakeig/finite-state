@@ -46,33 +46,51 @@ function App(start) {
 }
 
 App.prototype.dispatch = function(state) {
-  //
+  console.log('Dispatching app state update…');
 };
-App.prototype.transition = function(event, action) {
-  if (!event) {
-    throw new ReferenceError('event cannot be empty');
-  }
 
-  // console.log(`Transitioning from ${this.currentState.value} using ${event}`);
-  const curr = this._machine.transition(this.currentState, event);
+App.prototype.transition = function(event, action) {
+  const curr = (this.currentState = this._machine.transition(
+    this.currentState,
+    event
+  ));
+  // Synchronously update the appstate
   if (action) {
-    // console.log(`Updating state with ${action.type}`);
+    console.log(`Updating state for ${event}`, action);
     this._store.dispatch({ type: event, payload: action });
   }
-  this.currentState = curr;
-  if (curr.actions && curr.actions.length) {
-    // console.log(`Executing actions ${curr.actions}`);
-    return Promise.all(curr.actions.map(action => this[action]()));
+  if (curr.actions && curr.actions.length > 0) {
+    return Promise.all(
+      // Assumes that all actions are asynchronous and return a `Promise`
+      // TODO: Is that a good assumption? I think actions are supposed to be
+      //       synchronous and activities async. But maybe that’s what
+      //       `Promise.all()` ensures with the ordering.
+      //       See `promisify()` above.
+      curr.actions.map(a => call(this[normalizeAction(a)], this))
+    );
   }
-  // FIXME: Updates to state and UI state need to be transactional
-
-  // TODO: This looks weird
   return Promise.resolve();
 };
 
+/**
+ * Call a method of `that` if it exists. This is useful for the
+ * case where there’s a `cancel` activity that hasn’t been implemented.
+ *
+ * @param {Function} fn A method (i.e. function property) that can be bound to `that`
+ * @param {Object} that The instance to bind `fn` to
+ * @return Whatever the function returns or `undefined` if the method doesn’t exist
+ *
+ * @see normalizeAction
+ */
+function call(fn, that) {
+  if (fn && 'function' === typeof fn) {
+    return fn.call(that);
+  }
+}
+
 // FIXME: Dummy async loader
 function doLoadMarkdown() {
-  // QUESTION: How do I fake a delay here with setTimeout?
+  // FIXME: How do I fake a delay here with setTimeout?
   // return new Promise(resolve => setTimeout(() => resolve('myFile.md'), 200));
   const payload = {
     name: 'some-file.md',
@@ -97,5 +115,35 @@ App.prototype.loadMarkdown = function() {
       return this.transition('error', error);
     });
 };
+
+App.prototype.clearSelection = function() {};
+
+function capitalize(str) {
+  if ('string' === typeof str && str.length > 1) {
+    return str.charAt(0).toUpperCase() + str.substr(1, str.length);
+  }
+  return str;
+}
+
+function normalizeAction(action) {
+  const STOP = 'cancel';
+  if ('undefined' === typeof action || null === action) {
+    throw new ReferenceError('An action must exist');
+  }
+  if ('string' === typeof action) return action;
+  if ('xstate.start' === action.type) return action.activity;
+  if ('xstate.stop' === action.type) {
+    return STOP + capitalize(action.activity);
+  }
+  throw new Error(action);
+}
+
+// FIXME: What about error handling?
+function promisify(fn, ...rest) {
+  if ('function' !== typeof fn) throw new TypeError(typeof fn);
+  const result = fn(...rest);
+  if (result instanceof Promise) return result;
+  return Promise.resolve(result);
+}
 
 export default App;
