@@ -72,22 +72,6 @@ App.prototype.transition = function(event, action) {
   return Promise.resolve();
 };
 
-/**
- * Call a method of `that` if it exists. This is useful for the
- * case where there’s a `cancel` activity that hasn’t been implemented.
- *
- * @param {Function} fn A method (i.e. function property) that can be bound to `that`
- * @param {Object} that The instance to bind `fn` to
- * @return Whatever the function returns or `undefined` if the method doesn’t exist
- *
- * @see normalizeAction
- */
-function call(fn, that) {
-  if (fn && 'function' === typeof fn) {
-    return fn.call(that);
-  }
-}
-
 // FIXME: Dummy async loader
 function doLoadMarkdown() {
   // FIXME: How do I fake a delay here with setTimeout?
@@ -118,6 +102,12 @@ App.prototype.loadMarkdown = function() {
 
 App.prototype.clearSelection = function() {};
 
+/**
+ * Capitalize the first letter of a string.
+ *
+ * @param {String|*} str
+ * @return The capitalized string or itself for non-strings
+ */
 function capitalize(str) {
   if ('string' === typeof str && str.length > 1) {
     return str.charAt(0).toUpperCase() + str.substr(1, str.length);
@@ -136,6 +126,22 @@ function normalizeAction(action) {
     return STOP + capitalize(action.activity);
   }
   throw new Error(action);
+}
+
+/**
+ * Call a method of `that` if it exists. This is useful for the
+ * case where there’s a `cancel` activity that hasn’t been implemented.
+ *
+ * @param {Function} fn A method (i.e. function property) that can be bound to `that`
+ * @param {Object} that The instance to bind `fn` to
+ * @return Whatever the function returns or `undefined` if the method doesn’t exist
+ *
+ * @see normalizeAction
+ */
+function call(fn, that) {
+  if (fn && 'function' === typeof fn) {
+    return fn.call(that);
+  }
 }
 
 // FIXME: What about error handling?
