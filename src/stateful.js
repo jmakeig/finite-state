@@ -9,7 +9,7 @@ import { createStore } from 'redux';
  * @param {Object} [start] Optionally set the state, for example, for testing.
  *                    `currentState` and `state` properties to initialize.
  */
-function Stateful(machine, reducer, start) {
+function Stateful(machine, reducer = (s, a) => s, start) {
   const xstate = Machine(
     Object.assign(
       {},
@@ -40,10 +40,10 @@ Stateful.prototype.transition = function(event, action) {
     event
   ));
   // Synchronously update the appstate
-  if (action) {
-    console.log(`Updating state for ${event}`, action);
-    this._store.dispatch({ type: event, payload: action });
-  }
+  // if (action) {
+  // console.log(`Updating state for ${event}`, action);
+  this._store.dispatch({ type: event, payload: action });
+  // }
   if (curr.actions && curr.actions.length > 0) {
     return Promise.all(
       // Assumes that all actions are asynchronous and return a `Promise`

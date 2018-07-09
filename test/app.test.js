@@ -51,7 +51,6 @@ test('selectText', () => {
     });
 });
 
-/*
 test('cancel text selection', () => {
   expect.hasAssertions();
   const start = {
@@ -71,4 +70,3 @@ test('cancel text selection', () => {
     expect(app.state.selection).toBeUndefined();
   });
 });
-*/

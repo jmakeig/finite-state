@@ -8,9 +8,11 @@ function App(state) {
     switch (action.type) {
       case 'success':
       case 'error':
-        return Object.assign({}, state, { file: action.payload });
+        return assign(state, { file: action.payload });
       case 'selectText':
-        return Object.assign({}, state, { selection: action.payload });
+        return assign(state, { selection: action.payload });
+      case 'cancel':
+        return without(state, 'selection');
     }
     return state;
   }
@@ -46,6 +48,21 @@ App.prototype.loadMarkdown = function() {
     });
 };
 
-App.prototype.clearSelection = function() {};
+App.prototype.clearSelection = function() {
+  return Promise.resolve('cleared the selection');
+};
+
+function assign(obj, ...props) {
+  return Object.assign({}, obj, ...props);
+}
+
+function without(obj, ...props) {
+  const tmp = assign(obj);
+  for (const prop of props) {
+    delete tmp[prop];
+  }
+
+  return tmp;
+}
 
 export default App;
