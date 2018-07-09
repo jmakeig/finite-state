@@ -5,11 +5,11 @@ import markdown from '../src/states/machine.js';
 /**
  * Create a new application state machine.
  *
- * @param {*} [start] Optionally set the state, for example, for testing.
+ * @param {Object} [start] Optionally set the state, for example, for testing.
  *                    `currentState` and `state` properties to initialize.
  */
-function App(start) {
-  const machine = Machine(
+function Stateful(machine, reducer, start) {
+  const xstate = Machine(
     Object.assign(
       {},
       markdown,
@@ -17,8 +17,8 @@ function App(start) {
       start && start.currentState ? { initial: start.currentState } : {}
     )
   );
-  this._machine = machine;
-  this.currentState = machine.initialState;
+  this._machine = xstate;
+  this.currentState = this._machine.initialState;
 
   this._store = createStore(reducer, start ? start.state || {} : {});
   this._store.subscribe(() => {
@@ -31,25 +31,9 @@ function App(start) {
       get: () => this._store.getState()
     }
   });
-
-  function reducer(state, action) {
-    // `action.type` comes from the state transition name
-    switch (action.type) {
-      case 'success':
-      case 'error':
-        return Object.assign({}, state, { file: action.payload });
-      case 'selectText':
-        return Object.assign({}, state, { selection: action.payload });
-    }
-    return state;
-  }
 }
 
-App.prototype.dispatch = function(state) {
-  console.log('Dispatching app state update…');
-};
-
-App.prototype.transition = function(event, action) {
+Stateful.prototype.transition = function(event, action) {
   const curr = (this.currentState = this._machine.transition(
     this.currentState,
     event
@@ -71,6 +55,28 @@ App.prototype.transition = function(event, action) {
   }
   return Promise.resolve();
 };
+
+State.prototype.dispatch = function(state) {
+  console.log('Dispatching app state update…');
+};
+
+function App(state) {
+  Stateful.call(this, markdown, reducer, state);
+  function reducer(state, action) {
+    // `action.type` comes from the state transition name
+    switch (action.type) {
+      case 'success':
+      case 'error':
+        return Object.assign({}, state, { file: action.payload });
+      case 'selectText':
+        return Object.assign({}, state, { selection: action.payload });
+    }
+    return state;
+  }
+}
+
+App.prototype = Object.create(Stateful.prototype);
+App.prototype.constructor = App;
 
 // FIXME: Dummy async loader
 function doLoadMarkdown() {
