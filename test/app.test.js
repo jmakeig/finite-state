@@ -1,6 +1,6 @@
 import App from '../src/app.js';
 
-test('failing `Promise` test does time out', () => {
+test('failing `Promise` test does *not* time out', () => {
   expect.assertions(2);
   return Promise.resolve().then(() => {
     expect(!false).toBe(true);
@@ -8,7 +8,7 @@ test('failing `Promise` test does time out', () => {
   });
 });
 
-test('Unknown transition', () => {
+test('Unknown transition in strict mode', () => {
   const app = new App();
   expect(() => {
     app.transition('asdf');

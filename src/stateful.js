@@ -58,7 +58,7 @@ Stateful.prototype.transition = function(event, action) {
 };
 
 Stateful.prototype.dispatch = function(state) {
-  console.log('Dispatching app state update…');
+  // console.log('Dispatching app state update…');
 };
 
 function normalizeAction(action) {
