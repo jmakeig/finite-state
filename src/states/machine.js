@@ -1,6 +1,3 @@
-// import login from './login.js';
-// import doc from './document.js';
-
 export default {
   strict: true,
   key: 'Markdown',
@@ -17,13 +14,11 @@ export default {
         success: 'Document'
       },
       activities: ['loadMarkdown']
-      // onEntry: 'enterLoading',
-      // onExit: 'exitLoading'
     },
     Document: {
       on: {
         selectText: 'TextSelected',
-        selectAnnotation: 'NewAnnotation'
+        selectAnnotation: 'Annotation'
       }
     },
     Error: {},
@@ -34,6 +29,47 @@ export default {
       },
       onExit: ['clearSelection']
     },
-    NewAnnotation: {}
+    NewAnnotation: {
+      on: {
+        '': 'Annotation'
+      }
+    },
+    Annotation: {
+      initial: 'ActiveAnnotation',
+      states: {
+        ActiveAnnotation: {
+          on: {
+            edit: 'Editing'
+          }
+        },
+        Editing: {
+          initial: 'Synched',
+          on: {
+            done: 'ActiveAnnotation'
+          },
+          states: {
+            Synched: {
+              on: {
+                change: 'Dirty'
+              }
+            },
+            Dirty: {
+              on: {
+                save: 'Saving',
+                cancel: 'Synched'
+              }
+            },
+            Saving: {
+              on: {
+                saved: 'Synched',
+                cancel: 'Synched',
+                error: 'SaveError'
+              }
+            },
+            SaveError: {}
+          }
+        }
+      }
+    }
   }
 };
