@@ -35,7 +35,8 @@ export default {
           on: {
             annotate: '#NewAnnotation',
             cancel: 'DocumentLoaded'
-          }
+          },
+          onExit: ['clearSelection']
         }
       }
     },

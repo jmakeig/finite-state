@@ -17,7 +17,7 @@ test('Unknown transition in strict mode', () => {
 
 test('Initial state', () => {
   const app = new App();
-  expect(app.currentState.value).toBe('Empty');
+  expect(app.currentState.value).toEqual({ Document: 'Empty' });
 });
 
 test('load', () => {
@@ -25,7 +25,7 @@ test('load', () => {
   const app = new App();
   expect(app).toBeInstanceOf(App);
   return app.transition('load').then(() => {
-    expect(app.currentState.value).toBe('Document');
+    expect(app.currentState.value).toEqual({ Document: 'DocumentLoaded' });
     expect(app.state.file.name).toBe('some-file.md');
     expect(app.state.file.markdown).toMatch(/^# Hello, world!/);
   });
@@ -34,8 +34,8 @@ test('load', () => {
 test('selectText', () => {
   expect.hasAssertions();
   const start = {
-    currentState: 'Document',
-    state: { file: { name: 'X' } }
+    currentState: { Document: 'DocumentLoaded' },
+    state: { file: { name: 'file.md' } }
   };
   const app = new App(start);
   return app
@@ -45,7 +45,7 @@ test('selectText', () => {
       end: { line: 34, column: 77 }
     })
     .then(() => {
-      expect(app.currentState.value).toBe('TextSelected');
+      expect(app.currentState.value).toEqual({ Document: 'SelectedText' });
       expect(app.state.selection.start.line).toBe(33);
       expect(app.state.selection.end.column).toBe(77);
     });
@@ -54,7 +54,7 @@ test('selectText', () => {
 test('cancel text selection', () => {
   expect.hasAssertions();
   const start = {
-    currentState: 'TextSelected',
+    currentState: { Document: 'SelectedText' },
     state: {
       file: { name: 'X' },
       selection: {
@@ -66,7 +66,7 @@ test('cancel text selection', () => {
   };
   const app = new App(start);
   return app.transition('cancel').then(() => {
-    expect(app.currentState.value).toBe('Document');
+    expect(app.currentState.value).toEqual({ Document: 'DocumentLoaded' });
     expect(app.state.selection).toBeUndefined();
   });
 });

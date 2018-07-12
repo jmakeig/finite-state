@@ -1,74 +1,106 @@
 export default {
   strict: true,
   key: 'Markdown',
-  initial: 'Empty',
+  initial: 'Document',
   states: {
-    Empty: {
-      on: {
-        load: 'Loading'
-      }
-    },
-    Loading: {
-      on: {
-        error: 'Error',
-        success: 'Document'
-      },
-      activities: ['loadMarkdown']
-    },
     Document: {
-      id: 'Document',
+      initial: 'Empty',
       on: {
-        selectText: 'TextSelected',
-        selectAnnotation: 'Annotation'
-      }
-    },
-    Error: {},
-    TextSelected: {
-      on: {
-        annotate: 'NewAnnotation',
-        cancel: 'Document'
+        selectAnnotation: '#ActiveAnnotation',
+        reload: '.Empty'
       },
-      onExit: ['clearSelection']
-    },
-    NewAnnotation: {
-      on: {
-        '': 'Annotation'
+      states: {
+        Empty: {
+          on: {
+            load: 'Loading'
+          }
+        },
+        Loading: {
+          on: {
+            success: 'DocumentLoaded',
+            error: 'Error'
+          },
+          activities: ['loadMarkdown']
+        },
+        DocumentLoaded: {
+          id: 'DocumentLoaded',
+          on: {
+            selectText: 'SelectedText'
+          }
+        },
+        Error: {},
+        SelectedText: {
+          on: {
+            annotate: '#NewAnnotation',
+            cancel: 'DocumentLoaded'
+          },
+          onExit: ['clearSelection']
+        }
       }
     },
     Annotation: {
       initial: 'ActiveAnnotation',
+      on: {
+        close: '#DocumentLoaded'
+      },
+      onExit: 'cleanUpAnnotation',
       states: {
-        ActiveAnnotation: {
+        NewAnnotation: {
+          id: 'NewAnnotation',
           on: {
-            edit: 'Editing',
-            done: '#Document'
+            '': '#Dirty'
           }
         },
-        Editing: {
-          initial: 'Synched',
-          on: {
-            done: 'ActiveAnnotation'
-          },
+        ActiveAnnotation: {
+          id: 'ActiveAnnotation',
+          initial: 'Loading',
           states: {
-            Synched: {
+            Loading: {
               on: {
-                change: 'Dirty'
+                success: 'Viewing',
+                error: 'Error'
+              },
+              activities: ['loadAnnotation']
+            },
+            Viewing: {
+              id: 'Viewing',
+              on: {
+                edit: 'Editing'
               }
             },
-            Dirty: {
+            Editing: {
+              id: 'Editing',
+              initial: 'Synched',
               on: {
-                save: 'Saving',
-                cancel: 'Synched'
+                abandon: '#Viewing'
+              },
+              states: {
+                Synched: {
+                  on: {
+                    change: 'Dirty'
+                  }
+                },
+                Dirty: {
+                  id: 'Dirty',
+                  on: {
+                    change: 'Dirty',
+                    save: 'Saving'
+                  }
+                },
+                Saving: {
+                  on: {
+                    success: 'Synched',
+                    error: 'Error'
+                  }
+                },
+                Error: {
+                  on: {
+                    change: 'Dirty'
+                  }
+                }
               }
             },
-            Saving: {
-              on: {
-                saved: 'Synched',
-                cancel: 'Synched',
-                error: 'SaveError'
-              }
-            },
-            SaveError: {}
+            Error: {}
           }
         }
       }
