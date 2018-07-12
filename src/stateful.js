@@ -1,5 +1,6 @@
 import { Machine, State } from 'xstate';
 import { createStore } from 'redux';
+import { call, capitalize } from './util.js';
 
 /**
  * Create a new application state machine.
@@ -72,43 +73,6 @@ function normalizeAction(action) {
     return STOP + capitalize(action.activity);
   }
   throw new Error(action);
-}
-
-/**
- * Call a method of `that` if it exists. This is useful for the
- * case where there’s a `cancel` activity that hasn’t been implemented.
- *
- * @param {Function} fn A method (i.e. function property) that can be bound to `that`
- * @param {Object} that The instance to bind `fn` to
- * @return Whatever the function returns or `undefined` if the method doesn’t exist
- *
- * @see normalizeAction
- */
-function call(fn, that) {
-  if (fn && 'function' === typeof fn) {
-    return fn.call(that);
-  }
-}
-
-/**
- * Capitalize the first letter of a string.
- *
- * @param {String|*} str
- * @return The capitalized string or itself for non-strings
- */
-function capitalize(str) {
-  if ('string' === typeof str && str.length > 1) {
-    return str.charAt(0).toUpperCase() + str.substr(1, str.length);
-  }
-  return str;
-}
-
-// FIXME: What about error handling?
-function promisify(fn, ...rest) {
-  if ('function' !== typeof fn) throw new TypeError(typeof fn);
-  const result = fn(...rest);
-  if (result instanceof Promise) return result;
-  return Promise.resolve(result);
 }
 
 export default Stateful;

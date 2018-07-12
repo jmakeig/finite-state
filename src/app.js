@@ -1,5 +1,6 @@
 import Stateful from './stateful.js';
 import markdown from '../src/states/machine.js';
+import { shallowClone, without } from './util.js';
 
 function App(state) {
   Stateful.call(this, markdown, reducer, state);
@@ -8,9 +9,9 @@ function App(state) {
     switch (action.type) {
       case 'success':
       case 'error':
-        return assign(state, { file: action.payload });
+        return shallowClone(state, { file: action.payload });
       case 'selectText':
-        return assign(state, { selection: action.payload });
+        return shallowClone(state, { selection: action.payload });
       case 'cancel':
         return without(state, 'selection');
     }
@@ -51,18 +52,5 @@ App.prototype.loadMarkdown = function() {
 App.prototype.clearSelection = function() {
   return Promise.resolve('cleared the selection');
 };
-
-function assign(obj, ...props) {
-  return Object.assign({}, obj, ...props);
-}
-
-function without(obj, ...props) {
-  const tmp = assign(obj);
-  for (const prop of props) {
-    delete tmp[prop];
-  }
-
-  return tmp;
-}
 
 export default App;
