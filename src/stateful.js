@@ -1,4 +1,4 @@
-import { Machine } from 'xstate';
+import { Machine, State } from 'xstate';
 import { createStore } from 'redux';
 
 /**
@@ -10,16 +10,16 @@ import { createStore } from 'redux';
  *                    `currentState` and `state` properties to initialize.
  */
 function Stateful(machine, reducer = (s, a) => s, start) {
-  const xstate = Machine(
-    Object.assign(
-      {},
-      machine,
-      // Override the `initial` property of state machine configuration
-      start && start.currentState ? { initial: start.currentState } : {}
-    )
-  );
+  const xstate = Machine(machine);
   this._machine = xstate;
-  this.currentState = this._machine.initialState;
+
+  // <https://github.com/davidkpiano/xstate/issues/147#issuecomment-404633488>
+  this.currentState =
+    start && start.currentState
+      ? new State(start.currentState)
+      : this._machine.initialState;
+
+  // FIXME: Need to run state actions, espeically when overriding the initial state
 
   this._store = createStore(reducer, start ? start.state || {} : {});
   this._store.subscribe(() => {
