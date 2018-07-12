@@ -16,6 +16,7 @@ export default {
       activities: ['loadMarkdown']
     },
     Document: {
+      id: 'Document',
       on: {
         selectText: 'TextSelected',
         selectAnnotation: 'Annotation'
@@ -39,7 +40,8 @@ export default {
       states: {
         ActiveAnnotation: {
           on: {
-            edit: 'Editing'
+            edit: 'Editing',
+            done: '#Document'
           }
         },
         Editing: {
