@@ -7,6 +7,10 @@ export default {
   states: {
     Document: {
       initial: 'Empty',
+      on: {
+        selectAnnotation: '#ActiveAnnotation',
+        reload: '.Empty'
+      },
       states: {
         Empty: {
           on: {
@@ -23,9 +27,7 @@ export default {
         DocumentLoaded: {
           id: 'DocumentLoaded',
           on: {
-            selectText: 'SelectedText',
-            selectAnnotation: '#ActiveAnnotation',
-            reload: 'Empty'
+            selectText: 'SelectedText'
           }
         },
         Error: {},
