@@ -41,8 +41,11 @@ Stateful.prototype.transition = function(event, action) {
     event
   ));
   // Synchronously update the appstate
-  console.log(`Updating state for ${event}`, action);
-  this._store.dispatch({ type: event, payload: action });
+  // console.log(`Updating state for ${event}`, action);
+  // Ensure the action types are unique by prefixing the event with the
+  // state that transitioned *in*
+  const type = `${this.currentState.history.toString()}.${event}`;
+  this._store.dispatch({ type, payload: action });
   if (curr.actions && curr.actions.length > 0) {
     return Promise.all(
       // Assumes that all actions are asynchronous and return a `Promise`

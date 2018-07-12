@@ -11,14 +11,14 @@ function App(state) {
     //        Probably need to pass in some sort of metadata from the
     //        state machine.
     switch (action.type) {
-      case 'success':
-      case 'error':
+      case 'Document.Loading.success':
+      case 'ocument.Loading.error':
         return shallowClone(state, { file: action.payload });
-      case 'selectText':
+      case 'Document.DocumentLoaded.selectText':
         return shallowClone(state, { selection: action.payload });
-      case 'cancel':
+      case 'Document.SelectedText.cancel':
         return without(state, 'selection');
-      case 'selectAnnotation':
+      case 'Document.DocumentLoaded.selectAnnotation':
         return shallowClone(state, action.payload);
     }
     console.warn(`Unhandled action type: ${action.type}`);
