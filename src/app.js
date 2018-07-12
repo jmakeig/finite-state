@@ -1,11 +1,15 @@
 import Stateful from './stateful.js';
 import markdown from '../src/states/machine.js';
+import { uuidv4 as uuid } from 'uuid';
 import { shallowClone, without } from './util.js';
 
 function App(state) {
   Stateful.call(this, markdown, reducer, state);
   function reducer(state, action) {
     // `action.type` comes from the state transition name
+    // FIXME: To do this by convention, these names need to be unique
+    //        Probably need to pass in some sort of metadata from the
+    //        state machine.
     switch (action.type) {
       case 'success':
       case 'error':
@@ -14,7 +18,10 @@ function App(state) {
         return shallowClone(state, { selection: action.payload });
       case 'cancel':
         return without(state, 'selection');
+      case 'selectAnnotation':
+        return shallowClone(state, action.payload);
     }
+    console.warn(`Unhandled action type: ${action.type}`);
     return state;
   }
 }
@@ -52,5 +59,33 @@ App.prototype.loadMarkdown = function() {
 App.prototype.clearSelection = function() {
   return Promise.resolve('cleared the selection');
 };
+
+function doLoadAnnotation(id) {
+  return Promise.resolve({
+    activeAnnotation: {
+      id: 'B',
+      created: '2017-07-12T21:58:17.940Z',
+      user: 'dsthubbins',
+      range: {
+        text: 'this is what is selected',
+        start: { line: 88, column: 15 },
+        end: { line: 89, column: 2 }
+      },
+      comment: 'this is B’s comment'
+    }
+  });
+}
+
+App.prototype.loadAnnotation = function loadAnnotation() {
+  // return doLoadAnnotation(this.state.activeAnnotation)
+  //   .then(active => this.transition())
+  //   .catch(error => this.transition());
+};
+
+// App.prototype.createAnnotation = function createAnnotation() {
+//   this.transition('edit', {});
+// };
+
+// TODO: What about updates to appstate that aren’t the result of a state transition?
 
 export default App;

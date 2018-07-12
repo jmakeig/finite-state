@@ -70,3 +70,85 @@ test('cancel text selection', () => {
     expect(app.state.selection).toBeUndefined();
   });
 });
+
+/*
+test.only('annotate selected text', () => {
+  expect.hasAssertions();
+
+  const start = {
+    currentState: { Document: 'SelectedText' },
+    state: {
+      file: { name: 'file.md' },
+      selection: {
+        text: 'this is what is selected',
+        start: { line: 33, column: 14 },
+        end: { line: 34, column: 77 }
+      }
+    }
+  };
+
+  const app = new App(start);
+  return app.transition('annotate').then(() => {
+    expect(app.currentState.value).toEqual({
+      Annotation: { ActiveAnnotation: { Editing: 'Dirty' } }
+    });
+  });
+});
+*/
+
+test('select annotation', () => {
+  expect.hasAssertions();
+
+  const start = {
+    currentState: { Document: 'DocumentLoaded' },
+    state: {
+      file: { name: 'file.md' },
+      text: '…', // Markdown
+      annotations: [
+        {
+          id: 'A',
+          created: '2018-07-12T21:58:17.940Z',
+          user: 'dsmalls',
+          range: {
+            text: 'this is what is selected',
+            start: { line: 33, column: 14 },
+            end: { line: 34, column: 77 }
+          },
+          comment: 'this is A’s comment'
+        },
+        {
+          id: 'B',
+          created: '2017-07-12T21:58:17.940Z',
+          user: 'dsthubbins',
+          range: {
+            text: 'this is what is selected',
+            start: { line: 88, column: 15 },
+            end: { line: 89, column: 2 }
+          },
+          comment: 'this is B’s comment'
+        },
+        {
+          id: 'A',
+          created: '2014-07-12T21:58:17.940Z',
+          user: 'dsmalls',
+          range: {
+            text: 'this is what is selected',
+            start: { line: 122, column: 1 },
+            end: { line: 123, column: 77 }
+          },
+          comment: 'this is C’s comment'
+        }
+      ]
+    }
+  };
+
+  const app = new App(start);
+  return app
+    .transition('selectAnnotation', { activeAnnotation: 'B' })
+    .then(() => {
+      expect(app.currentState.value).toEqual({
+        Annotation: { ActiveAnnotation: 'Loading' }
+      });
+      expect(app.state.activeAnnotation).toBe('B');
+    });
+});

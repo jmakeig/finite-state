@@ -35,12 +35,16 @@ export function without(obj, ...props) {
  *
  * @param {Function} fn A method (i.e. function property) that can be bound to `that`
  * @param {Object} that The instance to bind `fn` to
+ * @param {Boolean} [strict = false] Whether to strictly check the existence of the method. Helpful for debugging.
  * @return Whatever the function returns or `undefined` if the method doesn’t exist
  *
  */
-export function call(fn, that) {
+export function call(fn, that, strict = false) {
   if (fn && 'function' === typeof fn) {
     return fn.call(that);
+  }
+  if (strict) {
+    throw new ReferenceError(`Must reference a valid instance method`);
   }
 }
 

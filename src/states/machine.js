@@ -48,8 +48,9 @@ export default {
         NewAnnotation: {
           id: 'NewAnnotation',
           on: {
-            '': '#Dirty'
-          }
+            edit: '#Dirty'
+          },
+          activities: ['createAnnotation']
         },
         ActiveAnnotation: {
           id: 'ActiveAnnotation',
