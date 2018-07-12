@@ -21,7 +21,9 @@ function App(state) {
       case 'Document.DocumentLoaded.selectAnnotation':
         return shallowClone(state, action.payload);
     }
-    console.warn(`Unhandled action type: ${action.type}`);
+    if (!/^@@redux/.test(action.type)) {
+      console.warn(`Unhandled action type: ${action.type}`);
+    }
     return state;
   }
 }
