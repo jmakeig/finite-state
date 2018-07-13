@@ -71,19 +71,22 @@ test('cancel text selection', () => {
   });
 });
 
-/*
-test.only('annotate selected text', () => {
+test('annotate selected text', () => {
   expect.hasAssertions();
 
   const start = {
     currentState: { Document: 'SelectedText' },
     state: {
+      user: { name: 'dsmalls' },
       file: { name: 'file.md' },
+      text: '…',
       selection: {
         text: 'this is what is selected',
         start: { line: 33, column: 14 },
         end: { line: 34, column: 77 }
-      }
+      },
+      annotations: [],
+      activeAnnotation: undefined
     }
   };
 
@@ -92,9 +95,12 @@ test.only('annotate selected text', () => {
     expect(app.currentState.value).toEqual({
       Annotation: { ActiveAnnotation: { Editing: 'Dirty' } }
     });
+    expect(app.state.activeAnnotation.id).not.toBeUndefined();
+    expect(app.state.activeAnnotation.created).toBeNull();
+    expect(app.state.activeAnnotation.user).toBe('dsmalls');
+    // TODO: expect(app.state.selection).toBeUndefined();
   });
 });
-*/
 
 test('select annotation', () => {
   expect.hasAssertions();

@@ -86,7 +86,8 @@ export default {
                   on: {
                     change: 'Dirty',
                     save: 'Saving'
-                  }
+                  },
+                  onEntry: 'flagDirty'
                 },
                 Saving: {
                   on: {

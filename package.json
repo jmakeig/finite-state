@@ -10,6 +10,7 @@
   "author": "Justin Makeig <jmpublic+github@makeig.com> (https://github.com/jmakeig)",
   "license": "Apache-2.0",
   "dependencies": {
+    "uuid": "^3.3.2",
     "xstate": "^3.3.3"
   },
   "devDependencies": {

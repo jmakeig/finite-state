@@ -1,6 +1,6 @@
 import Stateful from './stateful.js';
 import markdown from '../src/states/machine.js';
-import { uuidv4 as uuid } from 'uuid';
+import uuidv4 from 'uuid';
 import { shallowClone, without } from './util.js';
 
 function App(state) {
@@ -20,6 +20,8 @@ function App(state) {
         return without(state, 'selection');
       case 'Document.DocumentLoaded.selectAnnotation':
       case 'Annotation.ActiveAnnotation.Loading.success':
+      case 'Document.SelectedText.annotate':
+      case 'Annotation.NewAnnotation.edit':
         return shallowClone(state, action.payload);
     }
     if (!/^@@redux/.test(action.type)) {
@@ -126,9 +128,16 @@ App.prototype.loadAnnotation = function loadAnnotation() {
     .catch(error => this.transition('error', error));
 };
 
-// App.prototype.createAnnotation = function createAnnotation() {
-//   this.transition('edit', {});
-// };
+App.prototype.createAnnotation = function createAnnotation() {
+  const newAnnotation = {
+    id: uuidv4(),
+    created: null, // TODO: Capture timestamp on save
+    user: this.state.user.name, // FIXME: Need to get logged in user from the appstate
+    range: this.state.selection,
+    comment: null
+  };
+  this.transition('edit', { activeAnnotation: newAnnotation });
+};
 
 // TODO: What about updates to appstate that aren’t the result of a state transition?
 
