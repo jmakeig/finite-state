@@ -51,7 +51,7 @@ function doLoadMarkdown() {
  *
  * @return Promise
  */
-App.prototype.loadMarkdown = function() {
+App.prototype.loadMarkdown = function loadMarkdown() {
   return doLoadMarkdown()
     .then(file => {
       return this.transition('success', file);
@@ -61,7 +61,7 @@ App.prototype.loadMarkdown = function() {
     });
 };
 
-App.prototype.clearSelection = function() {
+App.prototype.clearSelection = function clearSelection() {
   return Promise.resolve('cleared the selection');
 };
 
@@ -79,10 +79,6 @@ function doLoadAnnotation(id) {
       comment: 'this is B’s comment'
     }
   });
-}
-
-function type(obj) {
-  return Object.prototype.toString.call(obj);
 }
 
 /*
