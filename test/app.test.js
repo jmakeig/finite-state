@@ -143,12 +143,12 @@ test('select annotation', () => {
   };
 
   const app = new App(start);
-  return app
-    .transition('selectAnnotation', { activeAnnotation: 'B' })
-    .then(() => {
-      expect(app.currentState.value).toEqual({
-        Annotation: { ActiveAnnotation: 'Loading' }
-      });
-      expect(app.state.activeAnnotation).toBe('B');
-    });
+  return (
+    app
+      .transition('selectAnnotation', { activeAnnotation: 'B' })
+      // { ActiveAnnotation: 'Loading' } happens in App.prototype.loadAnnotation
+      .then(() => {
+        expect(app.state.activeAnnotation.id).toBe('B');
+      })
+  );
 });

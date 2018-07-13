@@ -19,6 +19,7 @@ function App(state) {
       case 'Document.SelectedText.cancel':
         return without(state, 'selection');
       case 'Document.DocumentLoaded.selectAnnotation':
+      case 'Annotation.ActiveAnnotation.Loading.success':
         return shallowClone(state, action.payload);
     }
     if (!/^@@redux/.test(action.type)) {
@@ -37,7 +38,7 @@ function doLoadMarkdown() {
   const payload = {
     name: 'some-file.md',
     markdown: '# Hello, world!\n\nIpsum lorem…',
-    annotations: {}
+    annotations: []
   };
   // TODO: Load and parse Markdown file from the file system
   return Promise.resolve(payload);
@@ -78,10 +79,51 @@ function doLoadAnnotation(id) {
   });
 }
 
+function type(obj) {
+  return Object.prototype.toString.call(obj);
+}
+
+/*
+class AppStateError extends Error {
+  constructor(message) {
+    super();
+    this.message = message;
+    Error.captureStackTrace(this);
+  }
+  get name() {
+    return 'AppStateError';
+  }
+}
+*/
+
+function annotationByID(annotations, id) {
+  /*
+  if (!Array.isArray(annotations)) {
+    const t = type(annoations);
+    const msg = `${t}: The \`annotations\` property should be an Array. How did you get here?`;
+    throw new AppStateError(msg);
+  }
+  */
+  const annotation = annotations.find(annotation => id === annotation.id);
+  if (undefined === annotation) {
+    throw new ReferenceError(`Annotation does not exist: ${id}`);
+  }
+  return annotation;
+}
+
+// D’oh! This doesn’t need to be async since it’s coming out
+// of the appstate, but it doesn’t hurt and it’s future-proof.
 App.prototype.loadAnnotation = function loadAnnotation() {
-  // return doLoadAnnotation(this.state.activeAnnotation)
-  //   .then(active => this.transition())
-  //   .catch(error => this.transition());
+  return doLoadAnnotation(this.state.activeAnnotation)
+    .then(active =>
+      this.transition('success', {
+        activeAnnotation: annotationByID(
+          this.state.annotations,
+          this.state.activeAnnotation
+        )
+      })
+    )
+    .catch(error => this.transition('error', error));
 };
 
 // App.prototype.createAnnotation = function createAnnotation() {
