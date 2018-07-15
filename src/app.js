@@ -1,7 +1,8 @@
 import Stateful from './stateful.js';
-import markdown from '../src/states/machine.js';
+import markdown from './states/machine.js';
 import uuidv4 from 'uuid';
 import { shallowClone, without } from './util.js';
+import * as logger from './logger.js';
 
 function App(state) {
   Stateful.call(this, markdown, reducer, state);
@@ -25,7 +26,7 @@ function App(state) {
         return shallowClone(state, action.payload);
     }
     if (!/^@@redux/.test(action.type)) {
-      console.warn(`Unhandled action type: ${action.type}`);
+      logger.warn(`Unhandled action type: ${action.type}`);
     }
     return state;
   }
