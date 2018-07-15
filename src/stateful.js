@@ -1,5 +1,5 @@
 import { Machine, State } from 'xstate';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import { call, capitalize } from './util.js';
 
 /**
@@ -22,7 +22,18 @@ function Stateful(machine, reducer = (s, a) => s, start) {
 
   // FIXME: Need to run state actions, espeically when overriding the initial state
 
-  this._store = createStore(reducer, start ? start.state || {} : {});
+  const logger = store => next => action => {
+    // console.log('Dispatching', action);
+    const result = next(action);
+    // console.log('Next state', store.getState());
+    return result;
+  };
+
+  this._store = createStore(
+    reducer,
+    start ? start.state || {} : {},
+    applyMiddleware(logger)
+  );
   this._store.subscribe(() => {
     this.dispatch(this._store.getState());
   });
