@@ -12,15 +12,14 @@
           "properties": {
             "line": {
               "type": "integer",
-              "title": "Line number, one-based",
-              "default": 0
+              "title": "Line number, one-based"
             },
             "column": {
               "type": "integer",
-              "title": "Column number, one-based",
-              "default": 0
+              "title": "Column number, one-based"
             }
-          }
+          },
+          "required": ["line", "column"]
         },
         "end": {
           "type": "object",
@@ -28,15 +27,14 @@
           "properties": {
             "line": {
               "type": "integer",
-              "title": "Line number, one-based",
-              "default": 0
+              "title": "Line number, one-based"
             },
             "column": {
               "type": "integer",
-              "title": "Column number, one-based",
-              "default": 0
+              "title": "Column number, one-based"
             }
-          }
+          },
+          "required": ["line", "column"]
         }
       },
       "required": ["start", "end"]
@@ -65,7 +63,10 @@
           "examples": ["dsmalls"]
         },
         "currentSelection": {
-          "oneOf": [{ "$ref": "#/definitions/range" }, { "type": "null" }]
+          "title":
+            "What has been selected by the user mapped to the internal range representation",
+          "oneOf": [{ "$ref": "#/definitions/range" }, { "type": "null" }],
+          "default": null
         },
         "activeAnnotationID": {
           "$ref": "#/definitions/uuid"
