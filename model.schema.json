@@ -1,6 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/jmakeig/markdown-annotations",
+  "title":
+    "UI model for the Markdown annotations as tracked in the Redux store",
   "definitions": {
     "range": {
       "definitions": {
