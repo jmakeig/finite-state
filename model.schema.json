@@ -7,37 +7,28 @@
       "additionalItems": false,
       "properties": {
         "start": {
-          "type": "object",
-          "additionalItems": false,
-          "properties": {
-            "line": {
-              "type": "integer",
-              "title": "Line number, one-based"
-            },
-            "column": {
-              "type": "integer",
-              "title": "Column number, one-based"
-            }
-          },
-          "required": ["line", "column"]
+          "$ref": "#/definitions/rangeBoundary"
         },
         "end": {
-          "type": "object",
-          "additionalItems": false,
-          "properties": {
-            "line": {
-              "type": "integer",
-              "title": "Line number, one-based"
-            },
-            "column": {
-              "type": "integer",
-              "title": "Column number, one-based"
-            }
-          },
-          "required": ["line", "column"]
+          "$ref": "#/definitions/rangeBoundary"
         }
       },
       "required": ["start", "end"]
+    },
+    "rangeBoundary": {
+      "type": "object",
+      "additionalItems": false,
+      "properties": {
+        "line": {
+          "type": "integer",
+          "title": "Line number, one-based"
+        },
+        "column": {
+          "type": "integer",
+          "title": "Column number, one-based"
+        }
+      },
+      "required": ["line", "column"]
     },
     "uuid": {
       "type": "string",
