@@ -51,7 +51,14 @@
       "additionalItems": false,
       "properties": {
         "user": {
-          "type": "string",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
           "title": "Username of the current user or null for unauthenticated",
           "default": "null",
           "examples": ["dsmalls"]
@@ -59,29 +66,71 @@
         "currentSelection": {
           "title":
             "What has been selected by the user mapped to the internal range representation",
-          "oneOf": [{ "$ref": "#/definitions/range" }, { "type": "null" }],
+          "oneOf": [
+            {
+              "$ref": "#/definitions/range"
+            },
+            {
+              "type": "null"
+            }
+          ],
           "default": null
         },
         "activeAnnotationID": {
-          "$ref": "#/definitions/uuid"
+          "oneOf": [
+            {
+              "$ref": "#/definitions/uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
-      }
+      },
+      "required": ["user", "currentSelection", "activeAnnotationID"]
     },
     "model": {
       "type": "object",
       "additionalItems": false,
       "properties": {
-        "content": {
-          "type": "string",
-          "title": "The Content Schema ",
-          "default": "",
-          "examples": ["# Hello, world!\n\nIpsum lorem _dolor_ sic ament…"]
-        },
         "href": {
-          "type": "string",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
           "title": "The Href Schema ",
           "default": "",
           "examples": ["PM offsite, 2018-06-14.md"]
+        },
+        "mime": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "The Mime Schema ",
+          "default": "",
+          "examples": ["text/markdown"]
+        },
+        "content": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Contents of the document, line breaks matter",
+          "default": "",
+          "examples": ["# Hello, world!\n\nIpsum lorem _dolor_ sic ament…"]
         },
         "annotations": {
           "type": "array",
@@ -112,14 +161,10 @@
               }
             }
           }
-        },
-        "mime": {
-          "type": "string",
-          "title": "The Mime Schema ",
-          "default": "",
-          "examples": ["text/markdown"]
         }
-      }
+      },
+      "required": ["href", "mime", "content", "annotations"]
     }
-  }
+  },
+  "required": ["ui", "model"]
 }
