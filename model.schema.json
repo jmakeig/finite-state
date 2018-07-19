@@ -63,7 +63,7 @@
           "examples": ["dsmalls"]
         },
         "currentSelection": {
-          "$ref": "#/definitions/range"
+          "oneOf": [{ "$ref": "#/definitions/range" }, { "type": "null" }]
         },
         "activeAnnotationID": {
           "$ref": "#/definitions/uuid"
