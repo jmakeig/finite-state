@@ -50,6 +50,12 @@
       "type": "object",
       "additionalItems": false,
       "properties": {
+        "state": {
+          "type": "string",
+          "title": "State that the UI is in",
+          "description":
+            "This should be the indentifier of the state from from the statechart."
+        },
         "user": {
           "oneOf": [
             {
@@ -87,7 +93,7 @@
           ]
         }
       },
-      "required": ["user", "currentSelection", "activeAnnotationID"]
+      "required": ["state", "user", "currentSelection", "activeAnnotationID"]
     },
     "document": {
       "type": "object",

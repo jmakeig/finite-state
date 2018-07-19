@@ -1,5 +1,6 @@
 {
   "ui": {
+    "state": "Document",
     "user": "jmakeig",
     "currentSelection": {
       "start": {
@@ -13,7 +14,7 @@
     },
     "activeAnnotationID": "af4bbe2a-e88b-4ca6-bf9a-58eee6a1a742"
   },
-  "model": {
+  "document": {
     "content":
       "# Data Integration\n\n## Stability\n\n  * Overall stability, correctness\n  * Foundational architecture\n  \n## Harmonization\n\n  * Declarative harmonization\n    - Prepare\n    - Collect\n    - Map\n    - Match\n    - Merge\n    - Persist\n  * Smart Mastering\n  * Source model discovery\n    - Source profiling\n    - Source Explorer UI\n\n## Egress\n\n### API First Endpoints\n\n  * Java\n  * Delegated auth*\n  * Secure by default\n  * Workload isolation and instrumentation\n  * Push, alerting\n  * Debugging\n  * Unit and integration testing (“Refactor with confidence”)\n  * Management UI\n  * .NET, Node.js, Python\n  * Entity CRUD\n\n### Self-Service Export\n\n  * Declarative mapping\n  * Redaction\n  * Cloud: S3\n  * Provenance tracking\n  * Declarative mapping, UI\n  * Entity Explorer UI\n  \n### Change Data Capture\n\n  * Pull: Temporal queries\n  * Push: Triggers\n\n## Policy\n\n  * Confidentiality: Permissions, redaction\n  * Validity/Fitness for Purpose: Assertions run at lifecycle events (e.g. land in source, before harmonization, after map, on final, etc.)\n  * Reproducibility: PROV by default and via API\n  * Chain of Custody: Confidentiality + Reproducibility\n  * Integrate with external metadata catalogs (e.g. IBM at NT, Informatica at ABN)\n  * Lifecycle management: Tiered storage, archive/purge\n\n## Operation\n\n  * Multi-user: git-based pull-commit-push workflow\n  * Dev-Test-Prod workflow\n  * Headless API operations\n  \n## Ingest\n\n  * Bulk relational\n  * Cloud: S3\n  * Straight-through processing\n",
     "href": "PM offsite, 2018-06-14.md",

@@ -10,7 +10,12 @@ test('Valid schema', () => {
 test('Dummy instance', () => {
   expect(schema).toBeValidSchema();
   const model = {
-    ui: { user: null, currentSelection: null, activeAnnotationID: null },
+    ui: {
+      state: 'Empty',
+      user: null,
+      currentSelection: null,
+      activeAnnotationID: null
+    },
     document: {
       href: null,
       mime: null,
