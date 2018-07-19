@@ -3,32 +3,34 @@
   "$id": "https://github.com/jmakeig/markdown-annotations",
   "definitions": {
     "range": {
+      "definitions": {
+        "rangeBoundary": {
+          "type": "object",
+          "additionalItems": false,
+          "properties": {
+            "line": {
+              "type": "integer",
+              "title": "Line number, one-based"
+            },
+            "column": {
+              "type": "integer",
+              "title": "Column number, one-based"
+            }
+          },
+          "required": ["line", "column"]
+        }
+      },
       "type": "object",
       "additionalItems": false,
       "properties": {
         "start": {
-          "$ref": "#/definitions/rangeBoundary"
+          "$ref": "#/definitions/range/definitions/rangeBoundary"
         },
         "end": {
-          "$ref": "#/definitions/rangeBoundary"
+          "$ref": "#/definitions/range/definitions/rangeBoundary"
         }
       },
       "required": ["start", "end"]
-    },
-    "rangeBoundary": {
-      "type": "object",
-      "additionalItems": false,
-      "properties": {
-        "line": {
-          "type": "integer",
-          "title": "Line number, one-based"
-        },
-        "column": {
-          "type": "integer",
-          "title": "Column number, one-based"
-        }
-      },
-      "required": ["line", "column"]
     },
     "uuid": {
       "type": "string",
