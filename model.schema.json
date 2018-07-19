@@ -89,7 +89,7 @@
       },
       "required": ["user", "currentSelection", "activeAnnotationID"]
     },
-    "model": {
+    "document": {
       "type": "object",
       "additionalItems": false,
       "properties": {
@@ -166,5 +166,5 @@
       "required": ["href", "mime", "content", "annotations"]
     }
   },
-  "required": ["ui", "model"]
+  "required": ["ui", "document"]
 }

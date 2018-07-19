@@ -11,7 +11,7 @@ test('Dummy instance', () => {
   expect(schema).toBeValidSchema();
   const model = {
     ui: { user: null, currentSelection: null, activeAnnotationID: null },
-    model: {
+    document: {
       href: null,
       mime: null,
       content: null,
