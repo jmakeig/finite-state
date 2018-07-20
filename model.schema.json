@@ -4,6 +4,29 @@
   "title":
     "UI model for the Markdown annotations as tracked in the Redux store",
   "definitions": {
+    "annotation": {
+      "type": "object",
+      "additionalItems": false,
+      "properties": {
+        "id": {
+          "$comment":
+            "Only null temporarily for new annotations that haven’t yet been persisted",
+          "oneOf": [{ "$ref": "#/definitions/uuid" }, { "type": "null" }]
+        },
+        "timestamp": { "$ref": "#/definitions/timestamp" },
+        "user": {
+          "type": "string",
+          "title": "User name",
+          "default": "",
+          "examples": ["dsmalls"]
+        },
+        "comment": {
+          "type": "string",
+          "title": "User comment"
+        },
+        "range": { "$ref": "#/definitions/range" }
+      }
+    },
     "range": {
       "definitions": {
         "rangeBoundary": {
@@ -60,11 +83,11 @@
           "oneOf": [{ "$ref": "#/definitions/range" }, { "type": "null" }],
           "default": null
         },
-        "activeAnnotationID": {
-          "oneOf": [{ "$ref": "#/definitions/uuid" }, { "type": "null" }]
+        "activeAnnotation": {
+          "oneOf": [{ "$ref": "#/definitions/annotation" }, { "type": "null" }]
         }
       },
-      "required": ["state", "user", "currentSelection", "activeAnnotationID"]
+      "required": ["state", "user", "currentSelection", "activeAnnotation"]
     },
     "document": {
       "type": "object",
@@ -72,45 +95,25 @@
       "properties": {
         "href": {
           "oneOf": [{ "type": "string" }, { "type": "null" }],
-          "title": "The Href Schema ",
-          "default": "",
-          "examples": ["PM offsite, 2018-06-14.md"]
+          "title": "Name of the file, mostly for display",
+          "description":
+            "In the future should be used to track the actual location of the file. Local files from the file system will only give the file name.",
+          "examples": ["my-document.md"]
         },
         "mime": {
           "oneOf": [{ "type": "string" }, { "type": "null" }],
           "title": "The Mime Schema ",
-          "default": "",
+          "default": "text/markdown",
           "examples": ["text/markdown"]
         },
         "content": {
           "oneOf": [{ "type": "string" }, { "type": "null" }],
           "title": "Contents of the document, line breaks matter",
-          "default": "",
           "examples": ["# Hello, world!\n\nIpsum lorem _dolor_ sic ament…"]
         },
         "annotations": {
           "type": "array",
-          "items": {
-            "type": "object",
-            "additionalItems": false,
-            "properties": {
-              "id": { "$ref": "#/definitions/uuid" },
-              "timestamp": { "$ref": "#/definitions/timestamp" },
-              "user": {
-                "type": "string",
-                "title": "The User Schema ",
-                "default": "",
-                "examples": ["jmakeig"]
-              },
-              "comment": {
-                "type": "string",
-                "title": "The Comment Schema ",
-                "default": "",
-                "examples": ["asdfasd"]
-              },
-              "range": { "$ref": "#/definitions/range" }
-            }
-          }
+          "items": { "$ref": "#/definitions/annotation" }
         }
       },
       "required": ["href", "mime", "content", "annotations"]

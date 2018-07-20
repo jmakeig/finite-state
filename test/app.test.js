@@ -27,9 +27,28 @@ test('Initial state', () => {
 
 test('load', () => {
   expect.hasAssertions();
-  const app = new App();
+  const init = {
+    currentState: { Document: 'Empty' },
+    state: {
+      ui: {
+        state: 'Empty',
+        user: 'dsmalls',
+        currentSelection: null,
+        activeAnnotation: null
+      },
+      document: {
+        href: null,
+        content: null,
+        mime: null,
+        annotations: []
+      }
+    }
+  };
+  const app = new App(init);
   expect(app).toBeInstanceOf(App);
+  expect(app.state).toMatchSchema(schema);
   return app.transition('load').then(() => {
+    expect(app.state).toMatchSchema(schema);
     expect(app.currentState.value).toEqual({ Document: 'DocumentLoaded' });
     expect(app.state.document.href).toBe('some-file.md');
     expect(app.state.document.content).toMatch(/^# Hello, world!/);
@@ -38,14 +57,23 @@ test('load', () => {
 
 test('selectText', () => {
   expect.hasAssertions();
-  const start = {
+  const app = new App({
     currentState: { Document: 'DocumentLoaded' },
     state: {
-      ui: { state: 'DocumentLoaded', user: null, currentSelection: null },
-      document: { href: 'file.md', content: '# Asdf', annotations: [] }
+      ui: {
+        state: 'DocumentLoaded',
+        user: null,
+        currentSelection: null,
+        activeAnnotation: null
+      },
+      document: {
+        href: 'file.md',
+        content: '# Asdf',
+        mime: 'text/markdown',
+        annotations: []
+      }
     }
-  };
-  const app = new App(start);
+  });
   return app
     .transition('selectText', {
       // text: 'this is what is selected',
@@ -54,14 +82,15 @@ test('selectText', () => {
     })
     .then(() => {
       expect(app.currentState.value).toEqual({ Document: 'SelectedText' });
-      expect(app.state.currentselection.start.line).toBe(33);
-      expect(app.state.currentselection.end.column).toBe(77);
+      expect(app.state).toMatchSchema(schema);
+      expect(app.state.ui.currentSelection.start.line).toBe(33);
+      expect(app.state.ui.currentSelection.end.column).toBe(77);
     });
 });
 
 test('cancel text selection', () => {
   expect.hasAssertions();
-  const start = {
+  const app = new App({
     currentState: { Document: 'SelectedText' },
     state: {
       ui: {
@@ -72,7 +101,7 @@ test('cancel text selection', () => {
           start: { line: 33, column: 14 },
           end: { line: 34, column: 77 }
         },
-        activeAnnotationID: null
+        activeAnnotation: null
       },
       document: {
         href: 'X',
@@ -81,9 +110,8 @@ test('cancel text selection', () => {
         annotations: []
       }
     }
-  };
-  expect(start.state).toMatchSchema(schema);
-  const app = new App(start);
+  });
+  expect(app.state).toMatchSchema(schema);
   return app.transition('cancel').then(() => {
     expect(app.currentState.value).toEqual({ Document: 'DocumentLoaded' });
     expect(app.state.ui.currentSelection).toBeNull();
@@ -93,7 +121,7 @@ test('cancel text selection', () => {
 test('annotate selected text', () => {
   expect.hasAssertions();
 
-  const start = {
+  const app = new App({
     currentState: { Document: 'SelectedText' },
     state: {
       ui: {
@@ -104,7 +132,7 @@ test('annotate selected text', () => {
           start: { line: 33, column: 14 },
           end: { line: 34, column: 77 }
         },
-        activeAnnotationID: null
+        activeAnnotation: null
       },
       document: {
         href: 'file.md',
@@ -113,11 +141,8 @@ test('annotate selected text', () => {
         annotations: []
       }
     }
-  };
-
-  expect(start.state).toMatchSchema(schema);
-
-  const app = new App(start);
+  });
+  expect(app.state).toMatchSchema(schema);
   return app.transition('annotate').then(() => {
     expect(app.currentState.value).toEqual({
       Annotation: { ActiveAnnotation: { Editing: 'Dirty' } }
@@ -133,25 +158,63 @@ test('annotate selected text', () => {
 test('select annotation', () => {
   expect.hasAssertions();
 
-  const start = {
+  const app = new App({
     currentState: { Document: 'DocumentLoaded' },
     state: {
-      file: { name: 'file.md' },
-      text: '…', // Markdown
-      annotations: [
-        {
-          id: 'A',
-          created: '2018-07-12T21:58:17.940Z',
-          user: 'dsmalls',
-          range: {
-            text: 'this is what is selected',
-            start: { line: 33, column: 14 },
-            end: { line: 34, column: 77 }
+      document: {
+        href: 'file.md',
+        mime: 'text/markdown',
+        content: '…', // Markdown
+        annotations: [
+          {
+            id: 'f55c9bd0-e6b6-48e1-9a3f-6fa1cb3a9115',
+            created: '2018-07-12T21:58:17.940Z',
+            user: 'dsmalls',
+            range: {
+              text: 'this is what is selected',
+              start: { line: 33, column: 14 },
+              end: { line: 34, column: 77 }
+            },
+            comment: 'this is A’s comment'
           },
-          comment: 'this is A’s comment'
-        },
-        {
-          id: 'B',
+          {
+            id: 'c99fb735-242a-44fb-bc53-0c778b1006a1',
+            created: '2017-07-12T21:58:17.940Z',
+            user: 'dsthubbins',
+            range: {
+              text: 'this is what is selected',
+              start: { line: 88, column: 15 },
+              end: { line: 89, column: 2 }
+            },
+            comment: 'this is B’s comment'
+          },
+          {
+            id: '60c8c44b-53dd-434f-b989-cc61f38bf7f5',
+            created: '2014-07-12T21:58:17.940Z',
+            user: 'dsmalls',
+            range: {
+              text: 'this is what is selected',
+              start: { line: 122, column: 1 },
+              end: { line: 123, column: 77 }
+            },
+            comment: 'this is C’s comment'
+          }
+        ]
+      },
+      ui: {
+        state: 'DocumentLoaded',
+        user: 'dsmalls',
+        activeAnnotation: null,
+        currentSelection: null
+      }
+    }
+  });
+  expect(app.state).toMatchSchema(schema);
+  return (
+    app
+      .transition('selectAnnotation', {
+        activeAnnotation: {
+          id: 'c99fb735-242a-44fb-bc53-0c778b1006a1',
           created: '2017-07-12T21:58:17.940Z',
           user: 'dsthubbins',
           range: {
@@ -160,29 +223,22 @@ test('select annotation', () => {
             end: { line: 89, column: 2 }
           },
           comment: 'this is B’s comment'
-        },
-        {
-          id: 'A',
-          created: '2014-07-12T21:58:17.940Z',
-          user: 'dsmalls',
-          range: {
-            text: 'this is what is selected',
-            start: { line: 122, column: 1 },
-            end: { line: 123, column: 77 }
-          },
-          comment: 'this is C’s comment'
         }
-      ]
-    }
-  };
-
-  const app = new App(start);
-  return (
-    app
-      .transition('selectAnnotation', { activeAnnotation: 'B' })
+      })
       // { ActiveAnnotation: 'Loading' } happens in App.prototype.loadAnnotation
       .then(() => {
-        expect(app.state.activeAnnotation.id).toBe('B');
+        expect(app.state).toMatchSchema(schema);
+        expect(app.state.ui.activeAnnotation).toEqual({
+          id: 'c99fb735-242a-44fb-bc53-0c778b1006a1',
+          created: '2017-07-12T21:58:17.940Z',
+          user: 'dsthubbins',
+          range: {
+            text: 'this is what is selected',
+            start: { line: 88, column: 15 },
+            end: { line: 89, column: 2 }
+          },
+          comment: 'this is B’s comment'
+        });
       })
   );
 });

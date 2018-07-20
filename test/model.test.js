@@ -14,7 +14,7 @@ test('Dummy instance', () => {
       state: 'Empty',
       user: null,
       currentSelection: null,
-      activeAnnotationID: null
+      activeAnnotation: null
     },
     document: {
       href: null,

@@ -13,24 +13,35 @@ function App(state) {
     //        state machine.
     switch (action.type) {
       case 'Document.Loading.success':
-      case 'ocument.Loading.error':
+      case 'Document.Loading.error':
         return shallowClone(state, { document: action.payload });
       case 'Document.DocumentLoaded.selectText':
-        return shallowClone(state, { currentselection: action.payload });
+        return {
+          document: { ...state.document },
+          ui: { ...state.ui, currentSelection: action.payload }
+        };
       case 'Document.SelectedText.cancel':
         return {
           ui: { ...Object.assign(state.ui, { currentSelection: null }) },
           document: { ...state.document }
         };
       case 'Document.DocumentLoaded.selectAnnotation':
+        return {
+          ui: { ...state.ui, ...action.payload },
+          document: { ...state.document }
+        };
       case 'Annotation.ActiveAnnotation.Loading.success':
       case 'Document.SelectedText.annotate':
       case 'Annotation.NewAnnotation.edit':
-        return shallowClone(state, action.payload);
+        return {
+          ui: { ...state.ui },
+          document: { ...state.document }
+        };
     }
     if (!/^@@redux/.test(action.type)) {
       logger.warn(`Unhandled action type: ${action.type}`);
     }
+    // logger.log(state);
     return state;
   }
 }
@@ -85,19 +96,6 @@ function doLoadAnnotation(id) {
     }
   });
 }
-
-/*
-class AppStateError extends Error {
-  constructor(message) {
-    super();
-    this.message = message;
-    Error.captureStackTrace(this);
-  }
-  get name() {
-    return 'AppStateError';
-  }
-}
-*/
 
 function annotationByID(annotations, id) {
   /*
