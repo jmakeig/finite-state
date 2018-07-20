@@ -11,9 +11,13 @@
         "id": {
           "$comment":
             "Only null temporarily for new annotations that haven’t yet been persisted",
+          "title": "Unique identifier",
           "oneOf": [{ "$ref": "#/definitions/uuid" }, { "type": "null" }]
         },
-        "timestamp": { "$ref": "#/definitions/timestamp" },
+        "timestamp": {
+          "$ref": "#/definitions/timestamp",
+          "title": "Update time"
+        },
         "user": {
           "type": "string",
           "title": "User name",
@@ -28,13 +32,23 @@
       }
     },
     "range": {
+      "title": "Start and end of a selection range",
       "definitions": {
         "rangeBoundary": {
+          "title": "One end of a selection range",
           "type": "object",
           "additionalItems": false,
           "properties": {
-            "line": { "type": "integer", "title": "Line number, one-based" },
-            "column": { "type": "integer", "title": "Column number, one-based" }
+            "line": {
+              "title": "Line number, one-based",
+              "type": "integer",
+              "minimum": 1
+            },
+            "column": {
+              "title": "Column number, one-based",
+              "type": "integer",
+              "minimum": 1
+            }
           },
           "required": ["line", "column"]
         }
@@ -48,11 +62,13 @@
       "required": ["start", "end"]
     },
     "uuid": {
+      "title": "UUID v4",
       "type": "string",
       "format": "uuid",
       "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
     },
     "timestamp": {
+      "title": "ISO date",
       "type": "string",
       "$comment":
         "(\\d{4})-(\\d{2})-(\\d{2})T((\\d{2}):(\\d{2}):(\\d{2}))\\.(\\d{3})Z"
@@ -62,19 +78,20 @@
   "additionalItems": false,
   "properties": {
     "ui": {
+      "title": "UI model",
       "type": "object",
       "additionalItems": false,
       "properties": {
         "state": {
-          "type": "string",
           "title": "State that the UI is in",
           "description":
-            "This should be the indentifier of the state from from the statechart."
+            "This should be the indentifier of the state from from the statechart.",
+          "type": "string"
         },
         "user": {
-          "oneOf": [{ "type": "string" }, { "type": "null" }],
           "title": "Username of the current user or null for unauthenticated",
-          "default": "null",
+          "oneOf": [{ "type": "string" }, { "type": "null" }],
+          "default": null,
           "examples": ["dsmalls"]
         },
         "currentSelection": {
@@ -84,12 +101,16 @@
           "default": null
         },
         "activeAnnotation": {
-          "oneOf": [{ "$ref": "#/definitions/annotation" }, { "type": "null" }]
+          "title": "Currently selected annotation",
+          "description": "By copy to store the state as it’s updated",
+          "oneOf": [{ "$ref": "#/definitions/annotation" }, { "type": "null" }],
+          "default": null
         }
       },
       "required": ["state", "user", "currentSelection", "activeAnnotation"]
     },
     "document": {
+      "title": "Document being annotated",
       "type": "object",
       "additionalItems": false,
       "properties": {
@@ -102,7 +123,7 @@
         },
         "mime": {
           "oneOf": [{ "type": "string" }, { "type": "null" }],
-          "title": "The Mime Schema ",
+          "title": "MIME type",
           "default": "text/markdown",
           "examples": ["text/markdown"]
         },
