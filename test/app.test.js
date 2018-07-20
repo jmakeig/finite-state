@@ -1,4 +1,9 @@
+import { matchers } from 'jest-json-schema';
+import * as schema from '../model.schema.json';
+
 import App from '../src/app.js';
+
+expect.extend(matchers);
 
 test('failing `Promise` test does *not* time out', () => {
   expect.assertions(2);
@@ -26,8 +31,8 @@ test('load', () => {
   expect(app).toBeInstanceOf(App);
   return app.transition('load').then(() => {
     expect(app.currentState.value).toEqual({ Document: 'DocumentLoaded' });
-    expect(app.state.file.name).toBe('some-file.md');
-    expect(app.state.file.markdown).toMatch(/^# Hello, world!/);
+    expect(app.state.document.href).toBe('some-file.md');
+    expect(app.state.document.content).toMatch(/^# Hello, world!/);
   });
 });
 
@@ -35,19 +40,22 @@ test('selectText', () => {
   expect.hasAssertions();
   const start = {
     currentState: { Document: 'DocumentLoaded' },
-    state: { file: { name: 'file.md' } }
+    state: {
+      ui: { state: 'DocumentLoaded', user: null, currentSelection: null },
+      document: { href: 'file.md', content: '# Asdf', annotations: [] }
+    }
   };
   const app = new App(start);
   return app
     .transition('selectText', {
-      text: 'this is what is selected',
+      // text: 'this is what is selected',
       start: { line: 33, column: 14 },
       end: { line: 34, column: 77 }
     })
     .then(() => {
       expect(app.currentState.value).toEqual({ Document: 'SelectedText' });
-      expect(app.state.selection.start.line).toBe(33);
-      expect(app.state.selection.end.column).toBe(77);
+      expect(app.state.currentselection.start.line).toBe(33);
+      expect(app.state.currentselection.end.column).toBe(77);
     });
 });
 
@@ -56,18 +64,29 @@ test('cancel text selection', () => {
   const start = {
     currentState: { Document: 'SelectedText' },
     state: {
-      file: { name: 'X' },
-      selection: {
-        text: 'this is what is selected',
-        start: { line: 33, column: 14 },
-        end: { line: 34, column: 77 }
+      ui: {
+        state: 'SelectedText',
+        user: 'dsmalls',
+        currentSelection: {
+          text: 'this is what is selected',
+          start: { line: 33, column: 14 },
+          end: { line: 34, column: 77 }
+        },
+        activeAnnotationID: null
+      },
+      document: {
+        href: 'X',
+        content: '# Asdf\n\n',
+        mime: 'text/markdown',
+        annotations: []
       }
     }
   };
+  expect(start.state).toMatchSchema(schema);
   const app = new App(start);
   return app.transition('cancel').then(() => {
     expect(app.currentState.value).toEqual({ Document: 'DocumentLoaded' });
-    expect(app.state.selection).toBeUndefined();
+    expect(app.state.ui.currentSelection).toBeNull();
   });
 });
 
@@ -77,27 +96,36 @@ test('annotate selected text', () => {
   const start = {
     currentState: { Document: 'SelectedText' },
     state: {
-      user: { name: 'dsmalls' },
-      file: { name: 'file.md' },
-      text: '…',
-      selection: {
-        text: 'this is what is selected',
-        start: { line: 33, column: 14 },
-        end: { line: 34, column: 77 }
+      ui: {
+        state: 'SelectedText', // FIXME
+        user: 'dsmalls',
+        currentSelection: {
+          // text: 'this is what is selected',
+          start: { line: 33, column: 14 },
+          end: { line: 34, column: 77 }
+        },
+        activeAnnotationID: null
       },
-      annotations: [],
-      activeAnnotation: undefined
+      document: {
+        href: 'file.md',
+        content: '…',
+        mime: 'text/markdown',
+        annotations: []
+      }
     }
   };
+
+  expect(start.state).toMatchSchema(schema);
 
   const app = new App(start);
   return app.transition('annotate').then(() => {
     expect(app.currentState.value).toEqual({
       Annotation: { ActiveAnnotation: { Editing: 'Dirty' } }
     });
-    expect(app.state.activeAnnotation.id).not.toBeUndefined();
-    expect(app.state.activeAnnotation.created).toBeNull();
-    expect(app.state.activeAnnotation.user).toBe('dsmalls');
+    // expect(app.state.activeAnnotation.id).not.toBeUndefined();
+    // expect(app.state.activeAnnotation.created).toBeNull();
+    // expect(app.state.activeAnnotation.user).toBe('dsmalls');
+    expect(app.state).toMatchSchema(schema);
     // TODO: expect(app.state.selection).toBeUndefined();
   });
 });

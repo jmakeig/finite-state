@@ -14,11 +14,14 @@ function App(state) {
     switch (action.type) {
       case 'Document.Loading.success':
       case 'ocument.Loading.error':
-        return shallowClone(state, { file: action.payload });
+        return shallowClone(state, { document: action.payload });
       case 'Document.DocumentLoaded.selectText':
-        return shallowClone(state, { selection: action.payload });
+        return shallowClone(state, { currentselection: action.payload });
       case 'Document.SelectedText.cancel':
-        return without(state, 'selection');
+        return {
+          ui: { ...Object.assign(state.ui, { currentSelection: null }) },
+          document: { ...state.document }
+        };
       case 'Document.DocumentLoaded.selectAnnotation':
       case 'Annotation.ActiveAnnotation.Loading.success':
       case 'Document.SelectedText.annotate':
@@ -39,8 +42,9 @@ function doLoadMarkdown() {
   // FIXME: How do I fake a delay here with setTimeout?
   // return new Promise(resolve => setTimeout(() => resolve('myFile.md'), 200));
   const payload = {
-    name: 'some-file.md',
-    markdown: '# Hello, world!\n\nIpsum lorem…',
+    href: 'some-file.md',
+    content: '# Hello, world!\n\nIpsum lorem…',
+    mime: 'text/markdown',
     annotations: []
   };
   // TODO: Load and parse Markdown file from the file system
@@ -70,7 +74,7 @@ function doLoadAnnotation(id) {
   return Promise.resolve({
     activeAnnotation: {
       id: 'B',
-      created: '2017-07-12T21:58:17.940Z',
+      timestamp: '2017-07-12T21:58:17.940Z',
       user: 'dsthubbins',
       range: {
         text: 'this is what is selected',
@@ -128,10 +132,10 @@ App.prototype.loadAnnotation = function loadAnnotation() {
 App.prototype.createAnnotation = function createAnnotation() {
   const newAnnotation = {
     id: uuidv4(),
-    created: null, // TODO: Capture timestamp on save
-    user: this.state.user.name, // FIXME: Need to get logged in user from the appstate
-    range: this.state.selection,
-    comment: null
+    timestamp: null, // TODO: Capture timestamp on save
+    user: this.state.ui.user, // FIXME: Need to get logged in user from the appstate
+    comment: null,
+    range: this.state.currentselection
   };
   this.transition('edit', { activeAnnotation: newAnnotation });
 };
