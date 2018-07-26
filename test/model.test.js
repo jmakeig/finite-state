@@ -1,7 +1,7 @@
-import { matchers } from 'jest-json-schema';
+import { matchersWithOptions } from 'jest-json-schema';
 import * as schema from '../model.schema.json';
 
-expect.extend(matchers);
+expect.extend(matchersWithOptions({ validateSchema: true }));
 
 test('Valid schema', () => {
   expect(schema).toBeValidSchema();
