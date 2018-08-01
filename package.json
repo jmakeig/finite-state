@@ -11,14 +11,14 @@
   "license": "Apache-2.0",
   "dependencies": {
     "uuid": "^3.3.2",
-    "xstate": "^3.3.3"
+    "xstate": "^3.3.3",
+    "redux": "^4.0.0"
   },
   "devDependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "babel-plugin-transform-inline-environment-variables": "^0.4.3",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "jest": "^23.4.1",
-    "jest-json-schema": "^2.0.0",
-    "redux": "^4.0.0"
+    "jest": "^23.4.2",
+    "jest-json-schema": "^2.0.1"
   }
 }
