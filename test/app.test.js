@@ -22,13 +22,13 @@ test('Unknown transition in strict mode', () => {
 
 test('Initial state', () => {
   const app = new App();
-  expect(app.currentState.value).toEqual({ Document: 'Empty' });
+  expect(app.state.value).toEqual({ Document: 'Empty' });
 });
 
 test('load', () => {
   expect.hasAssertions();
   const init = {
-    currentState: { Document: 'Empty' },
+    state: { Document: 'Empty' },
     model: {
       ui: {
         state: 'Empty',
@@ -49,7 +49,7 @@ test('load', () => {
   expect(app.model).toMatchSchema(schema);
   return app.transition('load').then(() => {
     expect(app.model).toMatchSchema(schema);
-    expect(app.currentState.value).toEqual({ Document: 'DocumentLoaded' });
+    expect(app.state.value).toEqual({ Document: 'DocumentLoaded' });
     expect(app.model.document.href).toBe('some-file.md');
     expect(app.model.document.content).toMatch(/^# Hello, world!/);
   });
@@ -58,7 +58,7 @@ test('load', () => {
 test('selectText', () => {
   expect.hasAssertions();
   const app = new App({
-    currentState: { Document: 'DocumentLoaded' },
+    state: { Document: 'DocumentLoaded' },
     model: {
       ui: {
         state: 'DocumentLoaded',
@@ -81,7 +81,7 @@ test('selectText', () => {
       end: { line: 34, column: 77 }
     })
     .then(() => {
-      expect(app.currentState.value).toEqual({ Document: 'SelectedText' });
+      expect(app.state.value).toEqual({ Document: 'SelectedText' });
       expect(app.model).toMatchSchema(schema);
       expect(app.model.ui.currentSelection.start.line).toBe(33);
       expect(app.model.ui.currentSelection.end.column).toBe(77);
@@ -91,7 +91,7 @@ test('selectText', () => {
 test('cancel text selection', () => {
   expect.hasAssertions();
   const app = new App({
-    currentState: { Document: 'SelectedText' },
+    state: { Document: 'SelectedText' },
     model: {
       ui: {
         state: 'SelectedText',
@@ -113,7 +113,7 @@ test('cancel text selection', () => {
   });
   expect(app.model).toMatchSchema(schema);
   return app.transition('cancel').then(() => {
-    expect(app.currentState.value).toEqual({ Document: 'DocumentLoaded' });
+    expect(app.state.value).toEqual({ Document: 'DocumentLoaded' });
     expect(app.model.ui.currentSelection).toBeNull();
   });
 });
@@ -122,7 +122,7 @@ test('annotate selected text', () => {
   expect.hasAssertions();
 
   const app = new App({
-    currentState: { Document: 'SelectedText' },
+    state: { Document: 'SelectedText' },
     model: {
       ui: {
         state: 'SelectedText', // FIXME
@@ -144,7 +144,7 @@ test('annotate selected text', () => {
   });
   expect(app.model).toMatchSchema(schema);
   return app.transition('annotate').then(() => {
-    expect(app.currentState.value).toEqual({
+    expect(app.state.value).toEqual({
       Annotation: { ActiveAnnotation: { Editing: 'Dirty' } }
     });
     // expect(app.model.activeAnnotation.id).not.toBeUndefined();
@@ -159,7 +159,7 @@ test('select annotation', () => {
   expect.hasAssertions();
 
   const app = new App({
-    currentState: { Document: 'DocumentLoaded' },
+    state: { Document: 'DocumentLoaded' },
     model: {
       document: {
         href: 'file.md',

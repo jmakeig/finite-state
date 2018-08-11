@@ -8,16 +8,17 @@ import { call, capitalize } from './util.js';
  * @param {Object} machine Finite state machine definition
  * @param {Function} reducer Takes an action and returns a state
  * @param {Object} [start] Optionally set the state, for example, for testing.
- *                    `currentState` and `state` properties to initialize.
+ *                    ._currentState` and `state` properties to initialize.
  */
 function Stateful(machine, reducer = (s, a) => s, start) {
+  if (undefined === machine)
+    throw new ReferenceError('machine cannot be undefined');
+    
   this._machine = Machine(machine);
 
   // <https://github.com/davidkpiano/xstate/issues/147#issuecomment-404633488>
-  this.currentState =
-    start && start.currentState
-      ? new State(start.currentState)
-      : this._machine.initialState;
+  this._currentState =
+    start && start.state ? new State(start.state) : this._machine.initialState;
 
   // FIXME: Need to run state actions, espeically when overriding the initial state
 
@@ -38,6 +39,10 @@ function Stateful(machine, reducer = (s, a) => s, start) {
   });
 
   Object.defineProperties(this, {
+    state: {
+      enumerable: true,
+      get: () => this._currentState
+    },
     model: {
       enumerable: true,
       get: () => this._store.getState()
@@ -46,15 +51,15 @@ function Stateful(machine, reducer = (s, a) => s, start) {
 }
 
 Stateful.prototype.transition = function(event, action) {
-  const curr = (this.currentState = this._machine.transition(
-    this.currentState,
+  const curr = (this._currentState = this._machine.transition(
+    this._currentState,
     event
   ));
   // Synchronously update the appstate
   // console.log(`Updating state for ${event}`, action);
   // Ensure the action types are unique by prefixing the event with the
   // state that transitioned *in*
-  const type = `${this.currentState.history.toString()}.${event}`;
+  const type = `${this._currentState.history.toString()}.${event}`;
   this._store.dispatch({ type, payload: action });
   if (curr.actions && curr.actions.length > 0) {
     return Promise.all(
