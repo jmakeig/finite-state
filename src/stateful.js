@@ -11,8 +11,7 @@ import { call, capitalize } from './util.js';
  *                    `currentState` and `state` properties to initialize.
  */
 function Stateful(machine, reducer = (s, a) => s, start) {
-  const xstate = Machine(machine);
-  this._machine = xstate;
+  this._machine = Machine(machine);
 
   // <https://github.com/davidkpiano/xstate/issues/147#issuecomment-404633488>
   this.currentState =
