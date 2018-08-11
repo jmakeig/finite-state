@@ -30,7 +30,7 @@ function Stateful(machine, reducer = (s, a) => s, start) {
 
   this._store = createStore(
     reducer,
-    start ? start.state || {} : {},
+    start ? start.model || {} : {},
     applyMiddleware(logger)
   );
   this._store.subscribe(() => {
@@ -38,7 +38,7 @@ function Stateful(machine, reducer = (s, a) => s, start) {
   });
 
   Object.defineProperties(this, {
-    state: {
+    model: {
       enumerable: true,
       get: () => this._store.getState()
     }

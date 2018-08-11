@@ -29,7 +29,7 @@ test('load', () => {
   expect.hasAssertions();
   const init = {
     currentState: { Document: 'Empty' },
-    state: {
+    model: {
       ui: {
         state: 'Empty',
         user: 'dsmalls',
@@ -46,12 +46,12 @@ test('load', () => {
   };
   const app = new App(init);
   expect(app).toBeInstanceOf(App);
-  expect(app.state).toMatchSchema(schema);
+  expect(app.model).toMatchSchema(schema);
   return app.transition('load').then(() => {
-    expect(app.state).toMatchSchema(schema);
+    expect(app.model).toMatchSchema(schema);
     expect(app.currentState.value).toEqual({ Document: 'DocumentLoaded' });
-    expect(app.state.document.href).toBe('some-file.md');
-    expect(app.state.document.content).toMatch(/^# Hello, world!/);
+    expect(app.model.document.href).toBe('some-file.md');
+    expect(app.model.document.content).toMatch(/^# Hello, world!/);
   });
 });
 
@@ -59,7 +59,7 @@ test('selectText', () => {
   expect.hasAssertions();
   const app = new App({
     currentState: { Document: 'DocumentLoaded' },
-    state: {
+    model: {
       ui: {
         state: 'DocumentLoaded',
         user: null,
@@ -82,9 +82,9 @@ test('selectText', () => {
     })
     .then(() => {
       expect(app.currentState.value).toEqual({ Document: 'SelectedText' });
-      expect(app.state).toMatchSchema(schema);
-      expect(app.state.ui.currentSelection.start.line).toBe(33);
-      expect(app.state.ui.currentSelection.end.column).toBe(77);
+      expect(app.model).toMatchSchema(schema);
+      expect(app.model.ui.currentSelection.start.line).toBe(33);
+      expect(app.model.ui.currentSelection.end.column).toBe(77);
     });
 });
 
@@ -92,7 +92,7 @@ test('cancel text selection', () => {
   expect.hasAssertions();
   const app = new App({
     currentState: { Document: 'SelectedText' },
-    state: {
+    model: {
       ui: {
         state: 'SelectedText',
         user: 'dsmalls',
@@ -111,10 +111,10 @@ test('cancel text selection', () => {
       }
     }
   });
-  expect(app.state).toMatchSchema(schema);
+  expect(app.model).toMatchSchema(schema);
   return app.transition('cancel').then(() => {
     expect(app.currentState.value).toEqual({ Document: 'DocumentLoaded' });
-    expect(app.state.ui.currentSelection).toBeNull();
+    expect(app.model.ui.currentSelection).toBeNull();
   });
 });
 
@@ -123,7 +123,7 @@ test('annotate selected text', () => {
 
   const app = new App({
     currentState: { Document: 'SelectedText' },
-    state: {
+    model: {
       ui: {
         state: 'SelectedText', // FIXME
         user: 'dsmalls',
@@ -142,16 +142,16 @@ test('annotate selected text', () => {
       }
     }
   });
-  expect(app.state).toMatchSchema(schema);
+  expect(app.model).toMatchSchema(schema);
   return app.transition('annotate').then(() => {
     expect(app.currentState.value).toEqual({
       Annotation: { ActiveAnnotation: { Editing: 'Dirty' } }
     });
-    // expect(app.state.activeAnnotation.id).not.toBeUndefined();
-    // expect(app.state.activeAnnotation.created).toBeNull();
-    // expect(app.state.activeAnnotation.user).toBe('dsmalls');
-    expect(app.state).toMatchSchema(schema);
-    // TODO: expect(app.state.selection).toBeUndefined();
+    // expect(app.model.activeAnnotation.id).not.toBeUndefined();
+    // expect(app.model.activeAnnotation.created).toBeNull();
+    // expect(app.model.activeAnnotation.user).toBe('dsmalls');
+    expect(app.model).toMatchSchema(schema);
+    // TODO: expect(app.model.selection).toBeUndefined();
   });
 });
 
@@ -160,7 +160,7 @@ test('select annotation', () => {
 
   const app = new App({
     currentState: { Document: 'DocumentLoaded' },
-    state: {
+    model: {
       document: {
         href: 'file.md',
         mime: 'text/markdown',
@@ -209,7 +209,7 @@ test('select annotation', () => {
       }
     }
   });
-  expect(app.state).toMatchSchema(schema);
+  expect(app.model).toMatchSchema(schema);
   return (
     app
       .transition('selectAnnotation', {
@@ -227,8 +227,8 @@ test('select annotation', () => {
       })
       // { ActiveAnnotation: 'Loading' } happens in App.prototype.loadAnnotation
       .then(() => {
-        expect(app.state).toMatchSchema(schema);
-        expect(app.state.ui.activeAnnotation).toEqual({
+        expect(app.model).toMatchSchema(schema);
+        expect(app.model.ui.activeAnnotation).toEqual({
           id: 'c99fb735-242a-44fb-bc53-0c778b1006a1',
           created: '2017-07-12T21:58:17.940Z',
           user: 'dsthubbins',

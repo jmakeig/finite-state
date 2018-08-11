@@ -4,9 +4,9 @@ import uuidv4 from 'uuid';
 import { shallowClone, without } from './util.js';
 import * as logger from './logger.js';
 
-function App(state) {
-  Stateful.call(this, markdown, reducer, state);
-  function reducer(state, action) {
+function App(model) {
+  Stateful.call(this, markdown, reducer, model);
+  function reducer(model, action) {
     // `action.type` comes from the state transition name
     // FIXME: To do this by convention, these names need to be unique
     //        Probably need to pass in some sort of metadata from the
@@ -14,35 +14,35 @@ function App(state) {
     switch (action.type) {
       case 'Document.Loading.success':
       case 'Document.Loading.error':
-        return shallowClone(state, { document: action.payload });
+        return shallowClone(model, { document: action.payload });
       case 'Document.DocumentLoaded.selectText':
         return {
-          document: { ...state.document },
-          ui: { ...state.ui, currentSelection: action.payload }
+          document: { ...model.document },
+          ui: { ...model.ui, currentSelection: action.payload }
         };
       case 'Document.SelectedText.cancel':
         return {
-          ui: { ...Object.assign(state.ui, { currentSelection: null }) },
-          document: { ...state.document }
+          ui: { ...Object.assign(model.ui, { currentSelection: null }) },
+          document: { ...model.document }
         };
       case 'Document.DocumentLoaded.selectAnnotation':
         return {
-          ui: { ...state.ui, ...action.payload },
-          document: { ...state.document }
+          ui: { ...model.ui, ...action.payload },
+          document: { ...model.document }
         };
       case 'Annotation.ActiveAnnotation.Loading.success':
       case 'Document.SelectedText.annotate':
       case 'Annotation.NewAnnotation.edit':
         return {
-          ui: { ...state.ui },
-          document: { ...state.document }
+          ui: { ...model.ui },
+          document: { ...model.document }
         };
     }
     if (!/^@@redux/.test(action.type)) {
       logger.warn(`Unhandled action type: ${action.type}`);
     }
     // logger.log(state);
-    return state;
+    return model;
   }
 }
 App.prototype = Object.create(Stateful.prototype);
@@ -115,12 +115,12 @@ function annotationByID(annotations, id) {
 // D’oh! This doesn’t need to be async since it’s coming out
 // of the appstate, but it doesn’t hurt and it’s future-proof.
 App.prototype.loadAnnotation = function loadAnnotation() {
-  return doLoadAnnotation(this.state.activeAnnotation)
+  return doLoadAnnotation(this.model.activeAnnotation)
     .then(active =>
       this.transition('success', {
         activeAnnotation: annotationByID(
-          this.state.annotations,
-          this.state.activeAnnotation
+          this.model.annotations,
+          this.model.activeAnnotation
         )
       })
     )
@@ -131,9 +131,9 @@ App.prototype.createAnnotation = function createAnnotation() {
   const newAnnotation = {
     id: uuidv4(),
     timestamp: null, // TODO: Capture timestamp on save
-    user: this.state.ui.user, // FIXME: Need to get logged in user from the appstate
+    user: this.model.ui.user, // FIXME: Need to get logged in user from the appstate
     comment: null,
-    range: this.state.currentselection
+    range: this.model.currentselection
   };
   this.transition('edit', { activeAnnotation: newAnnotation });
 };
